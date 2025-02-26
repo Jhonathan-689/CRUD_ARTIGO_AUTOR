@@ -1,0 +1,16 @@
+{
+    "name": "jhonathan/crud-artigo-autor",
+    "description": "jhonathan <email@email.com.br>",
+    "autoload": {
+        "psr-4": {
+            "Jhonathan\\CrudArtigoAutor\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "jhonathan-689",
+            "email": "jhonathannauralves@gmail.com"
+        }
+    ],
+    "require": {}
+}
