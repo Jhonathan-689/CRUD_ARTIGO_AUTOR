@@ -21,4 +21,5 @@ class Db_Connect
     return $this->conn;
   }
 }
+?>
 

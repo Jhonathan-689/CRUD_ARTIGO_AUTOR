@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/CRUD ARTIGO_AUTOR/models/ArticleModel.php';
+require_once __DIR__ . '/../models/ArticleModel.php';
 
 class ArticleController
 {

@@ -1,25 +1,47 @@
 <?php
-require_once __DIR__ . '/CRUD ARTIGO_AUTOR/config/db_connect.php';
+require_once __DIR__ . '/../config/db_connect.php';
 
 class AuthorModel
 {
   private $conn;
+  private $userModel;
+  private $authorModel;
 
   public function __construct()
   {
-    $database = new Db_Connect();
-    $this->conn = $database->connect();
+    
+    $this->userModel = new UserModel();
+    $this->authorModel = new AuthorModel();
   }
+  
+  public function closeConnection()
+  {
+    $this->conn = null;
+  }
+
 
   // Criar um novo autor
   public function createAuthor($name, $email)
   {
-    $sql = "INSERT INTO authors (name, email, create_at) VALUES (:name, :email, NOW())";
+    $sql = "INSERT INTO authors (name, email, created_at) VALUES (:name, :email, NOW())";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':email', $email);
     return $stmt->execute();
+
+    $this->closeConnection();
+    return $result;
   }
+  public function activateAccount($token)
+{
+    $sql = "UPDATE authors SET is_active = 1 WHERE activation_token = :token";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':token', $token);
+    return $stmt->execute();
+
+    $this->closeConnection();
+    return $result;
+}
 
   // Obter todos os autores
   public function getAllAuthors()
