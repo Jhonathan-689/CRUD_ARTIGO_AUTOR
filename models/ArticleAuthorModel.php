@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/CRUD_ARTIGO_AUTOR/config/db_connect.php';
+require_once __DIR__ . '/../config/db_connect.php';
 
 class ArticleAuthorModel
 {
@@ -13,13 +13,13 @@ class ArticleAuthorModel
 
   // Associar um autor a um artigo
   public function associateAuthorToArticle($article_id, $author_id)
-  {
-    $sql = "INSERT INTO articles_authors (articles_id, authors_id) VALUES (:articles_id, :author_id)";
+{
+    $sql = "INSERT INTO articles_authors (article_id, author_id) VALUES (:article_id, :author_id)";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':articles_id', $article_id);
-    $stmt->bindParam(':authors_id', $author_id);
+    $stmt->bindParam(':article_id', $article_id, PDO::PARAM_INT);
+    $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
     return $stmt->execute();
-  }
+}
 
   // Obter autores de um artigo expecifico
   public function getAuthorsByArticle($article_id)

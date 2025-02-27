@@ -2,6 +2,6 @@
 session_start();
 session_unset();
 session_destroy();
-header("Location: login.php");
+header("Location: /CRUD_ARTIGO_AUTOR/views/login.php");
 exit();
 ?>

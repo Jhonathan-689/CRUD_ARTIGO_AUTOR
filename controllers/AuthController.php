@@ -37,7 +37,7 @@ class AuthController
       $mail->Subject = 'Ativação de conta';
 
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $activationLink = "$baseUrl/CRUD_ARTIGO_AUTOR/public/active.php?token=$token";
+      $activationLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ActivateController.php?token=$token";
 
       $mail->Body = "
             <h1>Ativação de Conta</h1>
@@ -73,7 +73,7 @@ class AuthController
 
       // Gerar o link de redefinição de senha
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/public/reset_password.php?token=$token";
+      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ResetPasswordController.php?token=$token";
 
       $mail->Body = "
             <h1>Recuperação de Senha</h1>
@@ -103,16 +103,17 @@ class AuthController
     if ($role === 'user') {
       if ($this->userModel->registerUser($name, $email, $password, $token)) {
         $this->sendActivationEmail($email, $token);
-        return "Usuário cadastrado! Verifique seu e-mail para ativar sua conta.";
+        return true; // Agora retorna true em caso de sucesso
       }
     } elseif ($role === 'author') {
       if ($this->authorModel->createAuthor($name, $email, $password, $token)) {
         $this->sendActivationEmail($email, $token);
-        return "Autor cadastrado! Verifique seu e-mail para ativar sua conta.";
+        return true; // Agora retorna true em caso de sucesso
       }
     }
     return "Erro ao cadastrar. Tente novamente mais tarde!";
   }
+
 
   // Ativar conta do usuário pelo token
   public function activateAccount($token)
@@ -139,14 +140,19 @@ class AuthController
   public function login($email, $password)
   {
     $user = $this->userModel->verifyLogin($email, $password);
+
     if (is_array($user)) {
-      session_start();
+      session_start(); // Garante que a sessão está ativa
+
       $_SESSION['user_id'] = $user['id'];
       $_SESSION['user_name'] = $user['name'];
-      $_SESSION['role'] = $user['role'];
-      return "Login bem-sucedido!";
+      $_SESSION['role'] = $user['role']; // Agora define corretamente se é 'user' ou 'author'
+
+      header("Location: ../views/dashboard.php"); // Redireciona para a dashboard
+      exit();
     }
-    return $user;
+
+    return $user; // Retorna mensagem de erro se login falhar
   }
 
   // Logout do usuário
@@ -160,20 +166,20 @@ class AuthController
 
   // Recuperação de senha
   public function forgotPassword($email)
-{
+  {
     $token = bin2hex(random_bytes(32));
 
     $userUpdated = $this->userModel->generateResetToken($email, $token);
     $authorUpdated = $this->authorModel->generateResetToken($email, $token);
 
     if ($userUpdated || $authorUpdated) {
- 
-        $this->sendResetEmail($email, $token);
-        return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";
+
+      $this->sendResetEmail($email, $token);
+      return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";
     }
 
     return "E-mail não foi encontrado.";
-}
+  }
 
   // Redefinir senha
   public function resetPassword($token, $newPassword)

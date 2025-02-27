@@ -94,6 +94,15 @@ public function resetPassword($token, $newPassword)
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
+  public function associateAuthorToArticle($article_id, $author_id)
+{
+    $sql = "INSERT INTO articles_authors (article_id, author_id) VALUES (:article_id, :author_id)";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':article_id', $article_id);
+    $stmt->bindParam(':author_id', $author_id);
+    return $stmt->execute();
+}
+
   // Atualizar informações do autor
   public function updateAuthor($id, $name, $email){
     $sql = "UPDATE authors SET name = :name, email = :email WHERE id = :id";
