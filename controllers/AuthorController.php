@@ -9,15 +9,6 @@ class AuthorController
     $this->authorModel = new AuthorModel(); // Correção: não precisa instanciar o banco aqui
   }
 
-  // Criar um novo autor
-  public function create($name, $email)
-  {
-    if ($this->authorModel->createAuthor($name, $email)) {
-      return "Autor criado com sucesso!";
-    }
-    return "Erro ao criar autor.";
-  }
-
   // Obter todos os autores
   public function getAll() // Correção: removido parâmetro desnecessário
   {
