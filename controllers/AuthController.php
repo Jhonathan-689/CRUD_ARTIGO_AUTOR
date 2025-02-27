@@ -19,39 +19,76 @@ class AuthController
 
   // Servidor smtp com gmail
   private function sendActivationEmail($email, $token)
-{
+  {
     $mail = new PHPMailer(true);
     try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'autoresartigosltcloud@gmail.com';
-        $mail->Password = 'gjvz gmic xnzu ubas';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'autoresartigosltcloud@gmail.com';
+      $mail->Password = 'gjvz gmic xnzu ubas';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = 587;
 
-        $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
-        $mail->addAddress($email);
+      $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
+      $mail->addAddress($email);
 
-        $mail->isHTML(true);
-        $mail->Subject = 'Ativação de conta';
+      $mail->isHTML(true);
+      $mail->Subject = 'Ativação de conta';
 
-        $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-        $activationLink = "$baseUrl/CRUD_ARTIGO_AUTOR/public/active.php?token=$token";
+      $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+      $activationLink = "$baseUrl/CRUD_ARTIGO_AUTOR/public/active.php?token=$token";
 
-        $mail->Body = "
+      $mail->Body = "
             <h1>Ativação de Conta</h1>
             <p>Clique no link abaixo para ativar sua conta:</p>
             <p><a href='$activationLink'>Ativar Conta</a></p>
             <p>Se não foi você que solicitou, ignore este e-mail.</p>
         ";
 
-        $mail->send();
-        return true;
+      $mail->send();
+      return true;
     } catch (Exception $e) {
-        return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
+      return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
     }
-}
+  }
+
+  private function sendResetEmail($email, $token)
+  {
+    $mail = new PHPMailer(true);
+    try {
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'autoresartigosltcloud@gmail.com';
+      $mail->Password = 'gjvz gmic xnzu ubas';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = 587;
+
+      $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
+      $mail->addAddress($email);
+
+      $mail->isHTML(true);
+      $mail->Subject = 'Redefinição de Senha';
+
+      // Gerar o link de redefinição de senha
+      $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/public/reset_password.php?token=$token";
+
+      $mail->Body = "
+            <h1>Recuperação de Senha</h1>
+            <p>Clique no link abaixo para redefinir sua senha:</p>
+            <p><a href='$resetLink'>Redefinir Senha</a></p>
+            <p>Se não foi você que solicitou, ignore este e-mail.</p>
+        ";
+
+      $mail->send();
+      return true;
+    } catch (Exception $e) {
+      return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
+    }
+  }
+
 
 
   // Registrar um novo usuário ou autor
@@ -69,7 +106,7 @@ class AuthController
         return "Usuário cadastrado! Verifique seu e-mail para ativar sua conta.";
       }
     } elseif ($role === 'author') {
-      if ($this->authorModel->createAuthor($name, $email, $password,$token)) {
+      if ($this->authorModel->createAuthor($name, $email, $password, $token)) {
         $this->sendActivationEmail($email, $token);
         return "Autor cadastrado! Verifique seu e-mail para ativar sua conta.";
       }
@@ -79,23 +116,23 @@ class AuthController
 
   // Ativar conta do usuário pelo token
   public function activateAccount($token)
-{
+  {
     error_log("Tentando ativar conta com token: " . $token);
 
     $userActivated = $this->userModel->activateAccount($token);
     $authorActivated = $this->authorModel->activateAccount($token);
 
     if ($userActivated) {
-        error_log("Usuário ativado com sucesso.");
-        return "Conta ativada com sucesso! Você já pode fazer o login.";
+      error_log("Usuário ativado com sucesso.");
+      return "Conta ativada com sucesso! Você já pode fazer o login.";
     } elseif ($authorActivated) {
-        error_log("Autor ativado com sucesso.");
-        return "Conta ativada com sucesso! Você já pode fazer o login.";
+      error_log("Autor ativado com sucesso.");
+      return "Conta ativada com sucesso! Você já pode fazer o login.";
     } else {
-        error_log("Erro: Token inválido ou conta já ativada.");
-        return "Token inválido ou conta já ativada.";
+      error_log("Erro: Token inválido ou conta já ativada.");
+      return "Token inválido ou conta já ativada.";
     }
-}
+  }
 
 
   // Login do usuário
@@ -103,11 +140,11 @@ class AuthController
   {
     $user = $this->userModel->verifyLogin($email, $password);
     if (is_array($user)) {
-        session_start();
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['name'];
-        $_SESSION['role'] = $user['role'];
-        return "Login bem-sucedido!";
+      session_start();
+      $_SESSION['user_id'] = $user['id'];
+      $_SESSION['user_name'] = $user['name'];
+      $_SESSION['role'] = $user['role'];
+      return "Login bem-sucedido!";
     }
     return $user;
   }
@@ -130,24 +167,26 @@ class AuthController
     $authorUpdated = $this->authorModel->generateResetToken($email, $token);
 
     if ($userUpdated || $authorUpdated) {
+ 
+        $this->sendResetEmail($email, $token);
         return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";
     }
 
     return "E-mail não foi encontrado.";
 }
 
-
   // Redefinir senha
   public function resetPassword($token, $newPassword)
-{
+  {
     $userUpdated = $this->userModel->resetPassword($token, $newPassword);
     $authorUpdated = $this->authorModel->resetPassword($token, $newPassword);
 
     if ($userUpdated || $authorUpdated) {
-        return "Senha redefinida com sucesso!";
+      return "Senha redefinida com sucesso!";
     }
 
     return "Token Inválido ou expirado.";
-}
-  
+  }
+
+
 }
