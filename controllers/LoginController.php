@@ -3,7 +3,7 @@ session_start();
 
 // Se o usuário já estiver logado, redireciona para o dashboard
 if (isset($_SESSION['user_id'])) {
-    header("Location: /CRUD_ARTIGO_AUTOR/views/dashboard.php");
+    header("Location: ../views/dashboard.php");
     exit();
 }
 
@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $message = $auth->login($email, $password);
 
     if ($message === "Login bem-sucedido!") {
-        header("Location: /CRUD_ARTIGO_AUTOR/views/dashboard.php");
+        header("Location: ../views/dashboard.php");
         exit();
     }
 }

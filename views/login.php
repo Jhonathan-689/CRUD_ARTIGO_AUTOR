@@ -28,7 +28,7 @@
         <div class="alert alert-danger"><?php echo htmlspecialchars($message); ?></div>
       <?php endif; ?>
 
-      <form method="POST" action="/CRUD_ARTIGO_AUTOR/controllers/LoginController.php">
+      <form method="POST" action="../controllers/LoginController.php">
         <div class="mb-3">
           <label for="email" class="form-label">E-mail:</label>
           <input type="email" name="email" id="email" class="form-control" required>

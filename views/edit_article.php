@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'author') {
-  header("Location: login.php");
+  header("Location: ../views/login.php");
   exit();
 }
 
@@ -11,7 +11,7 @@ $articleModel = new ArticleModel();
 $article = $articleModel->getArticleById($_GET['id']);
 
 if (!$article) {
-  header("Location: my_publications.php?error=notfound");
+  header("Location: ../views/my_publications.php?error=notfound");
   exit();
 }
 ?>

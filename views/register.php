@@ -7,8 +7,8 @@
     <title>Cadastro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="/CRUD_ARTIGO_AUTOR/public/css/style.css">
-    <script defer src="/CRUD_ARTIGO_AUTOR/public/js/form-validation.js"></script>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <script defer src="../public/js/form-validation.js"></script>
 </head>
 
 <body>
@@ -22,7 +22,7 @@
                     <div class="alert alert-info"><?php echo htmlspecialchars($message); ?></div>
                 <?php endif; ?>
 
-                <form id="registerForm" method="POST" action="/CRUD_ARTIGO_AUTOR/controllers/RegisterController.php">
+                <form id="registerForm" method="POST" action="../controllers/RegisterController.php">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nome:</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -59,7 +59,7 @@
                     <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
                 </form>
 
-                <p class="text-center mt-3">Já tem uma conta? <a href="login.php">Faça login</a></p>
+                <p class="text-center mt-3">Já tem uma conta? <a href="../views/login.php">Faça login</a></p>
             </div>
         </div>
     </div>

@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $result = $auth->resetPassword($token, $newPassword);
         if ($result === "Senha redefinida com sucesso!") {
-            header("Location: /CRUD_ARTIGO_AUTOR/views/login.php");
+            header("Location: ../views/login.php");
             exit(); // Garante que o redirecionamento seja imediato
         } else {
             $message = $result;

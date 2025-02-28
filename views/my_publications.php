@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'author') {
-    header("Location: login.php");
+    header("Location: ../views/login.php");
     exit();
 }
 
@@ -19,7 +19,7 @@ $articles = $articleModel->getArticlesByAuthor($author_id);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minhas Publicações</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script defer src="/CRUD_ARTIGO_AUTOR/public/js/form-validation.js"></script>
+    <script defer src="../public/js/form-validation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
@@ -32,13 +32,13 @@ $articles = $articleModel->getArticlesByAuthor($author_id);
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Início</a>
+                        <a class="nav-link" href="../views/dashboard.php">Início</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" href="my_publications.php">Minhas Publicações</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-danger" href="/CRUD_ARTIGO_AUTOR/controllers/logoutController.php">Sair</a>
+                        <a class="nav-link text-danger" href="../controllers/logoutController.php">Sair</a>
                     </li>
                 </ul>
             </div>

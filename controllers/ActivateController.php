@@ -16,7 +16,7 @@ if (isset($_GET['token'])) {
 
     if ($activated) {
         error_log("Conta ativada com sucesso.");
-        header("Location: /CRUD_ARTIGO_AUTOR/views/login.php");
+        header("Location: ../views/login.php");
         exit();
     } else {
         error_log("Falha ao ativar conta com token: " . $token);

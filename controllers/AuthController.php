@@ -19,43 +19,50 @@ class AuthController
 
   // Servidor smtp com gmail
   private function sendActivationEmail($email, $token)
-  {
+{
     $mail = new PHPMailer(true);
+
     try {
-      $mail->isSMTP();
-      $mail->Host = 'smtp.gmail.com';
-      $mail->SMTPAuth = true;
-      $mail->Username = 'autoresartigosltcloud@gmail.com';
-      $mail->Password = 'gjvz gmic xnzu ubas';
-      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-      $mail->Port = 587;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'autoresartigosltcloud@gmail.com';
+        $mail->Password = 'mhil advs laih tlmw';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8';
 
-      $mail->CharSet = 'UTF-8';
+        // Configuração do e-mail
+        $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
+        $mail->addAddress($email);
 
-      $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
-      $mail->addAddress($email);
+        $mail->isHTML(true);
+        $mail->Subject = 'Ativação de Conta';
 
-      $mail->isHTML(true);
-      $mail->Subject = 'Ativação de conta';
+        // Corrigindo o link de ativação
+        $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+        $activationLink = "$baseUrl/controllers/ActivateController.php?token=$token";
 
-      $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $activationLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ActivateController.php?token=$token";
-
-      $mail->Body = "
+        $mail->Body = "
             <h1>Ativação de Conta</h1>
-            <p>Olá, Obrigado por se registrar!</p>
+            <p>Olá, obrigado por se registrar!</p>
             <p>Clique no link abaixo para ativar sua conta:</p>
-            <p><a href='$activationLink'>Ativar Conta</a></p>
+            <p><a href='$activationLink'>$activationLink</a></p>
             <p>Se não foi você que solicitou, ignore este e-mail.</p>
-            
         ";
 
-      $mail->send();
-      return true;
+        // Enviar e verificar se deu certo
+        if ($mail->send()) {
+            return true;
+        } else {
+            return "Erro ao enviar e-mail: " . $mail->ErrorInfo;
+        }
+
     } catch (Exception $e) {
-      return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
+        return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
     }
-  }
+}
+
 
   private function sendResetEmail($email, $token)
   {
@@ -65,7 +72,7 @@ class AuthController
       $mail->Host = 'smtp.gmail.com';
       $mail->SMTPAuth = true;
       $mail->Username = 'autoresartigosltcloud@gmail.com';
-      $mail->Password = 'gjvz gmic xnzu ubas';
+      $mail->Password = 'mhil advs laih tlmw';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
       $mail->Port = 587;
 
@@ -77,7 +84,7 @@ class AuthController
 
       // Gerar o link de redefinição de senha
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ResetPasswordController.php?token=$token";
+      $resetLink = "$baseUrl/controllers/ResetPasswordController.php?token=$token";
 
       $mail->Body = "
             <h1>Recuperação de Senha</h1>

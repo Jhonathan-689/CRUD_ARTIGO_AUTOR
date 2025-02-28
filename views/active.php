@@ -8,6 +8,6 @@
 <body>
     <h2>Ativação de Conta</h2>
     <p><?php echo htmlspecialchars($message); ?></p>
-    <a href="login.php">Ir para o Login</a>
+    <a href="../views/login.php">Ir para o Login</a>
 </body>
 </html>

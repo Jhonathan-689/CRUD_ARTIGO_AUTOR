@@ -3,7 +3,7 @@ session_start();
 
 // Se o usuário já estiver logado, redireciona para o dashboard
 if (isset($_SESSION['user_id'])) {
-    header("Location: /CRUD_ARTIGO_AUTOR/views/dashboard.php");
+    header("Location: ../views/dashboard.php");
     exit();
 }
 
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         error_log("Resultado do registro: " . print_r($result, true));
 
         if ($result === true) {
-            header("Location: /CRUD_ARTIGO_AUTOR/views/login.php"); // Redireciona após sucesso
+            header("Location: ../views/login.php"); // Redireciona após sucesso
             exit();
         } else {
             $message = "Erro ao cadastrar: " . htmlspecialchars($result);
@@ -38,4 +38,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Inclui a view do formulário de cadastro
-require_once __DIR__ . '/../views/register.php';
+require_once __DIR__ . '../views/register.php';

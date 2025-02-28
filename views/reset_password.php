@@ -23,7 +23,7 @@
                         <div class="alert alert-danger"><?php echo htmlspecialchars($message); ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="/CRUD_ARTIGO_AUTOR/controllers/ResetPasswordController.php">
+                    <form method="POST" action="../controllers/ResetPasswordController.php">
                         <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
                         <div class="mb-3">
@@ -40,7 +40,7 @@
                     </form>
 
                     <div class="mt-3 text-center">
-                        <p><a href="/CRUD_ARTIGO_AUTOR/views/login.php" class="text-decoration-none">Voltar ao login</a></p>
+                        <p><a href="../views/login.php" class="text-decoration-none">Voltar ao login</a></p>
                     </div>
                 </div>
             </div>
