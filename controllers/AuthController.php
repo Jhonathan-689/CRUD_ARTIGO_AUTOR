@@ -30,6 +30,8 @@ class AuthController
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
       $mail->Port = 587;
 
+      $mail->CharSet = 'UTF-8';
+
       $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
       $mail->addAddress($email);
 
@@ -41,8 +43,7 @@ class AuthController
 
       $mail->Body = "
             <h1>Ativação de Conta</h1>
-            <p>Olá,</p>
-            <p>Obrigado por se registrar!</p>
+            <p>Olá, Obrigado por se registrar!</p>
             <p>Clique no link abaixo para ativar sua conta:</p>
             <p><a href='$activationLink'>Ativar Conta</a></p>
             <p>Se não foi você que solicitou, ignore este e-mail.</p>
