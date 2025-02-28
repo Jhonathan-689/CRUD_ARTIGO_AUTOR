@@ -42,27 +42,43 @@ class ArticleModel
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
+  public function getArticlesByAuthor($author_id)
+  {
+    $sql = "SELECT a.id, a.title, a.content, a.created_at 
+            FROM articles a
+            JOIN articles_authors aa ON a.id = aa.article_id
+            WHERE aa.author_id = :author_id
+            ORDER BY a.created_at DESC";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+  }
 
   // Obter um artigo pelo id
   public function getArticleById($id)
   {
-    $sql = "SELECT * FROM articles WHERE id = :id";
+    $sql = "SELECT * FROM articles WHERE id = :id"; // Certifique-se de que a query está correta
     $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT); // Garante que o ID é tratado como número inteiro
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
   // Atualizar informações do artigo
 
   public function updateArticles($id, $title, $content)
-  {
+{
     $sql = "UPDATE articles SET title = :title, content = :content WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':id', $id);
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':content', $content);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+    $stmt->bindParam(':content', $content, PDO::PARAM_STR);
+
     return $stmt->execute();
-  }
+}
+
 
   // Excluir um artigo
   public function deleteArticle($id)

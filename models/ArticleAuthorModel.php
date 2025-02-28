@@ -47,13 +47,13 @@ class ArticleAuthorModel
 
   // Remover um autor de um artigo
   public function removeAuthorFromArticle($article_id, $author_id)
-  {
-    $sql = "DELETE FROM articles_authors WHERE articles_id = :articles_id AND authors_id = :authors_id";
+{
+    $sql = "DELETE FROM articles_authors WHERE article_id = :article_id AND author_id = :author_id";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':article_id', $article_id);
-    $stmt->bindParam(':author_id', $author_id);
+    $stmt->bindParam(':article_id', $article_id, PDO::PARAM_INT);
+    $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
     return $stmt->execute();
-  }
+}
 }
 
 
