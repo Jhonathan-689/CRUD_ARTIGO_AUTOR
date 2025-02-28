@@ -68,7 +68,7 @@ class ArticleModel
 
   // Atualizar informações do artigo
 
-  public function updateArticles($id, $title, $content)
+  public function updateArticle($id, $title, $content)
 {
     $sql = "UPDATE articles SET title = :title, content = :content WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
