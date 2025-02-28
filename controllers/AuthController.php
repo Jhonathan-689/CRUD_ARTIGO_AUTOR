@@ -19,49 +19,59 @@ class AuthController
 
   // Servidor smtp com gmail
   private function sendActivationEmail($email, $token)
-{
+  {
     $mail = new PHPMailer(true);
 
     try {
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'autoresartigosltcloud@gmail.com';
-        $mail->Password = 'mhil advs laih tlmw';
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port = 587;
-        $mail->CharSet = 'UTF-8';
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'autoresartigosltcloud@gmail.com';
+      $mail->Password = 'mhil advs laih tlmw';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = 587;
+      $mail->CharSet = 'UTF-8';
 
-        // Configuração do e-mail
-        $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
-        $mail->addAddress($email);
+      // Configuração do e-mail
+      $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos LT Cloud');
+      $mail->addAddress($email);
 
-        $mail->isHTML(true);
-        $mail->Subject = 'Ativação de Conta';
+      $mail->isHTML(true);
+      $mail->Subject = 'Ativação de Conta';
+      // Corrigindo o link de ativação
+      $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+      $activationLink = rtrim($baseUrl, '/') . "/CRUD_ARTIGO_AUTOR/controllers/ActivateController.php?token=" . urlencode($token);
 
-        // Corrigindo o link de ativação
-        $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-        $activationLink = "$baseUrl/controllers/ActivateController.php?token=$token";
+      // Corpo do e-mail
+      $mail->Body = "
+    <h1>Ativação de Conta</h1>
+    <p>Olá, obrigado por se registrar!</p>
+    <p>Clique no botão abaixo para ativar sua conta:</p>
+    <p>
+        <a href='$activationLink' 
+           style='display: inline-block; padding: 12px 20px; font-size: 16px; color: white; background-color: #28a745; text-decoration: none; border-radius: 5px;'>
+           ✅ Ativar Conta
+        </a>
+    </p>
+    <p>Se não foi você que solicitou, ignore este e-mail.</p>
+";
 
-        $mail->Body = "
-            <h1>Ativação de Conta</h1>
-            <p>Olá, obrigado por se registrar!</p>
-            <p>Clique no link abaixo para ativar sua conta:</p>
-            <p><a href='$activationLink'>$activationLink</a></p>
-            <p>Se não foi você que solicitou, ignore este e-mail.</p>
-        ";
+      // Corpo alternativo (caso o cliente de e-mail não aceite HTML)
+      $mail->AltBody = "Ativação de Conta\n\nOlá, obrigado por se registrar!\nClique no link abaixo para ativar sua conta:\n$activationLink\n\nSe não foi você que solicitou, ignore este e-mail.";
 
-        // Enviar e verificar se deu certo
-        if ($mail->send()) {
-            return true;
-        } else {
-            return "Erro ao enviar e-mail: " . $mail->ErrorInfo;
-        }
+      // Enviar e verificar se deu certo
+      if ($mail->send()) {
+        return true;
+      } else {
+        error_log("Erro ao enviar e-mail: " . $mail->ErrorInfo);
+        return false;
+      }
 
     } catch (Exception $e) {
-        return "Erro ao enviar e-mail: {$mail->ErrorInfo}";
+      error_log("Erro ao enviar e-mail: " . $mail->ErrorInfo);
+      return false;
     }
-}
+  }
 
 
   private function sendResetEmail($email, $token)
