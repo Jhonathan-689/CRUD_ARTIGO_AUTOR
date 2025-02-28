@@ -94,7 +94,7 @@ class AuthController
 
       // Gerar o link de redefinição de senha
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $resetLink = "$baseUrl/controllers/ResetPasswordController.php?token=$token";
+      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ResetPasswordController.php?token=$token";
 
       $mail->Body = "
             <h1>Recuperação de Senha</h1>
