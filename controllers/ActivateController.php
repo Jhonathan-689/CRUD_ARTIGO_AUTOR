@@ -1,11 +1,12 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 require_once __DIR__ . '/AuthController.php';
 
 $auth = new AuthController();
-$message = ''; // Inicializa a variável para evitar warnings
+$message = '';
 
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
@@ -16,16 +17,21 @@ if (isset($_GET['token'])) {
 
     if ($activated) {
         error_log("Conta ativada com sucesso.");
+        $_SESSION['message'] = "Conta ativada com sucesso! Agora você pode fazer login.";
+        $_SESSION['message_type'] = "success";
         header("Location: ../views/login.php");
         exit();
     } else {
         error_log("Falha ao ativar conta com token: " . $token);
-        $message = "Erro: Token inválido ou conta já ativada.";
+        $_SESSION['message'] = "Erro: Token inválido ou conta já ativada.";
+        $_SESSION['message_type'] = "danger";
+        header("Location: ../views/active.php");
+        exit();
     }
 } else {
     error_log("Nenhum token foi recebido no ActivateController.php.");
-    $message = "Token inválido ou não fornecido.";
+    $_SESSION['message'] = "Token inválido ou não fornecido.";
+    $_SESSION['message_type'] = "danger";
+    header("Location: ../views/active.php");
+    exit();
 }
-
-// Passar a variável para a view
-require_once __DIR__ . '/../views/active.php';

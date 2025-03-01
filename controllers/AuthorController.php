@@ -6,22 +6,19 @@ class AuthorController
   private $authorModel;
 
   public function __construct(){
-    $this->authorModel = new AuthorModel(); // Correção: não precisa instanciar o banco aqui
+    $this->authorModel = new AuthorModel();
   }
 
-  // Obter todos os autores
-  public function getAll() // Correção: removido parâmetro desnecessário
+  public function getAll() 
   {
     return $this->authorModel->getAllAuthors();
   }
 
-  // Obter um autor pelo ID
   public function getById($id)
   {
     return $this->authorModel->getAuthorById($id);
   }
 
-  // Atualizar um autor
   public function update($id, $name, $email)
   {
     if ($this->authorModel->updateAuthor($id, $name, $email)) {
@@ -30,7 +27,6 @@ class AuthorController
     return "Erro ao atualizar o autor.";
   }
 
-  // Excluir um autor
   public function delete($id)
   {
     if ($this->authorModel->deleteAuthor($id)) {

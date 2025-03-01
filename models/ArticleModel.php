@@ -12,7 +12,6 @@ class ArticleModel
     $this->conn = $database->connect();
   }
 
-  // Criar um novo artigo
   public function createArticle($title, $content)
   {
     $sql = "INSERT INTO articles (title, content, created_at) VALUES (:title, :content, NOW())";
@@ -21,13 +20,12 @@ class ArticleModel
     $stmt->bindParam(':content', $content);
 
     if ($stmt->execute()) {
-      return $this->conn->lastInsertId(); // Retorna o ID do artigo recém-criado
+      return $this->conn->lastInsertId();
     }
 
     return false;
   }
 
-  // Obter todos os artigos
   public function getAllArticles()
   {
     $sql = "SELECT a.id, a.title, a.content, a.created_at, au.name AS author_name 
@@ -56,17 +54,14 @@ class ArticleModel
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  // Obter um artigo pelo id
   public function getArticleById($id)
   {
-    $sql = "SELECT * FROM articles WHERE id = :id"; // Certifique-se de que a query está correta
+    $sql = "SELECT * FROM articles WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT); // Garante que o ID é tratado como número inteiro
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
-
-  // Atualizar informações do artigo
 
   public function updateArticle($id, $title, $content)
 {
@@ -79,8 +74,6 @@ class ArticleModel
     return $stmt->execute();
 }
 
-
-  // Excluir um artigo
   public function deleteArticle($id)
   {
     $sql = "DELETE FROM articles WHERE id = :id";

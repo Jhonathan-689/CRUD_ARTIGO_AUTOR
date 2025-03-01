@@ -56,40 +56,30 @@ class UserModel
 
   public function verifyLogin($email, $password)
   {
-    // A consulta SQL seleciona os dados de usuários e autores baseados no e-mail
     $sql = "SELECT id, name, password, is_active, 'user' AS role FROM users WHERE email = :email
             UNION
             SELECT id, name, password, is_active, 'author' AS role FROM authors WHERE email = :email";
 
-    // Prepara e executa a consulta
+
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':email', $email);
     $stmt->execute();
 
-    // Busca os dados do usuário ou autor
+ 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Verifica se o usuário foi encontrado
     if (!$user) {
       return "Credenciais incorretas, tente novamente!";
     }
-
-    // Verifica se o usuário é um 'user' e valida a senha
     if ($user['role'] === 'user' && !password_verify($password, $user['password'])) {
       return "Credenciais incorretas, tente novamente!";
     }
-
-    // Verifica se o autor tem senha (se autor não tiver senha, a verificação pode ser ignorada)
     if ($user['role'] === 'author' && !empty($user['password']) && !password_verify($password, $user['password'])) {
       return "Credenciais incorretas, tente novamente!";
     }
-
-    // Verifica se a conta está ativada
     if ($user['is_active'] == 0) {
       return "Conta não ativada. Verifique seu e-mail.";
     }
-
-    // Retorna os dados do usuário ou autor se tudo estiver correto
     return $user;
   }
 

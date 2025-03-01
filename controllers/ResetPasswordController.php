@@ -20,12 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $auth->resetPassword($token, $newPassword);
         if ($result === "Senha redefinida com sucesso!") {
             header("Location: ../views/login.php");
-            exit(); // Garante que o redirecionamento seja imediato
+            exit(); 
         } else {
             $message = $result;
         }
     }
 }
 
-// Inclui a view do formulário de redefinição de senha
 require_once __DIR__ . '/../views/reset_password.php';

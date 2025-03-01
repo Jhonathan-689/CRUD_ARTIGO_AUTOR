@@ -14,7 +14,6 @@ class AuthorModel
     $this->userModel = new UserModel();
   }
 
-  // Criar um novo autor
   public function createAuthor($name, $email, $password, $token)
   {
     try {
@@ -75,8 +74,6 @@ public function resetPassword($token, $newPassword)
     return $stmt->execute();
 }
 
-
-  // Obter todos os autores
   public function getAllAuthors()
   {
     $sql = "SELECT * FROM authors ORDER BY created_at DESC";
@@ -85,7 +82,6 @@ public function resetPassword($token, $newPassword)
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  // Obter um autor pelo ID
   public function getAuthorById($id) {
     $sql = "SELECT * FROM authors WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
@@ -103,7 +99,6 @@ public function resetPassword($token, $newPassword)
     return $stmt->execute();
 }
 
-  // Atualizar informações do autor
   public function updateAuthor($id, $name, $email){
     $sql = "UPDATE authors SET name = :name, email = :email WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
@@ -113,7 +108,6 @@ public function resetPassword($token, $newPassword)
     return $stmt->execute();
   }
 
-  // Excluir um autor
   public function deleteAuthor($id){
     $sql = "DELETE FROM authors WHERE id = :id";
     $stmt = $this->conn->prepare($sql);

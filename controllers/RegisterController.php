@@ -1,16 +1,8 @@
 <?php
 session_start();
-
-// Se o usuário já estiver logado, redireciona para o dashboard
-if (isset($_SESSION['user_id'])) {
-    header("Location: ../views/dashboard.php");
-    exit();
-}
-
 require_once __DIR__ . '/AuthController.php';
 
 $auth = new AuthController();
-$message = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST['name'] ?? '');
@@ -20,20 +12,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $role = $_POST['role'] ?? '';
 
     if (empty($name) || empty($email) || empty($password) || empty($role)) {
-        $message = "Preencha todos os campos!";
-    } elseif ($password !== $confirm_password) {
-        $message = "As senhas não coincidem!";
+        $_SESSION['message'] = "Preencha todos os campos!";
+        $_SESSION['message_type'] = "danger";
+        header("Location: ../views/register.php");
+        exit();
+    }
+
+    if ($password !== $confirm_password) {
+        $_SESSION['message'] = "As senhas não coincidem!";
+        $_SESSION['message_type'] = "danger";
+        header("Location: ../views/register.php");
+        exit();
+    }
+
+    // Verifica se o e-mail já está cadastrado
+    $result = $auth->register($name, $email, $password, $role);
+
+    if ($result === true) {
+        $_SESSION['message'] = "Cadastro realizado com sucesso! Verifique o e-mail para ativar sua conta.";
+        $_SESSION['message_type'] = "success";
+        header("Location: ../views/login.php");
+        exit();
     } else {
-        $result = $auth->register($name, $email, $password, $role);
-
-        error_log("Resultado do registro: " . print_r($result, true));
-
-        if ($result === true) {
-            header("Location: ../views/login.php"); // Redireciona após sucesso
-            exit();
-        } else {
-            $message = "Erro ao cadastrar: " . htmlspecialchars($result);
-        }
+        $_SESSION['message'] = "Erro ao cadastrar: " . htmlspecialchars($result);
+        $_SESSION['message_type'] = "danger";
+        header("Location: ../views/register.php");
+        exit();
     }
 }
-header("Location: /../views/dashboard.php");

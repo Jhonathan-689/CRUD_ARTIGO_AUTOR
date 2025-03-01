@@ -10,6 +10,12 @@ require_once __DIR__ . '/../models/ArticleModel.php';
 $articleModel = new ArticleModel();
 $author_id = $_SESSION['user_id'];
 $articles = $articleModel->getArticlesByAuthor($author_id);
+
+
+$message = $_SESSION['message'] ?? '';
+$message_type = $_SESSION['message_type'] ?? 'info';
+unset($_SESSION['message']);
+unset($_SESSION['message_type']);
 ?>
 
 <!DOCTYPE html>
@@ -47,6 +53,13 @@ $articles = $articleModel->getArticlesByAuthor($author_id);
 
     <div class="container mt-5">
         <h2>Minhas Publicações</h2>
+        
+        <?php if (!empty($message)): ?>
+            <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+                <?php echo htmlspecialchars($message); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
 
         <?php if (!empty($articles)): ?>
             <ul class="list-group">

@@ -17,7 +17,6 @@ class AuthController
     $this->authorModel = new AuthorModel();
   }
 
-  // Servidor smtp com gmail
   private function sendActivationEmail($email, $token)
   {
     $mail = new PHPMailer(true);
@@ -32,17 +31,15 @@ class AuthController
       $mail->Port = 587;
       $mail->CharSet = 'UTF-8';
 
-      // Configuração do e-mail
       $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos LT Cloud');
       $mail->addAddress($email);
 
       $mail->isHTML(true);
       $mail->Subject = 'Ativação de Conta';
-      // Corrigindo o link de ativação
+
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
       $activationLink = rtrim($baseUrl, '/') . "/controllers/ActivateController.php?token=" . urlencode($token);
 
-      // Corpo do e-mail
       $mail->Body = "
     <h1>Ativação de Conta</h1>
     <p>Olá, obrigado por se registrar!</p>
@@ -56,10 +53,8 @@ class AuthController
     <p>Se não foi você que solicitou, ignore este e-mail.</p>
 ";
 
-      // Corpo alternativo (caso o cliente de e-mail não aceite HTML)
       $mail->AltBody = "Ativação de Conta\n\nOlá, obrigado por se registrar!\nClique no link abaixo para ativar sua conta:\n$activationLink\n\nSe não foi você que solicitou, ignore este e-mail.";
 
-      // Enviar e verificar se deu certo
       if ($mail->send()) {
         return true;
       } else {
@@ -92,7 +87,6 @@ class AuthController
       $mail->isHTML(true);
       $mail->Subject = 'Redefinição de Senha';
 
-      // Gerar o link de redefinição de senha
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
       $resetLink = "$baseUrl/controllers/ResetPasswordController.php?token=$token";
 
@@ -110,9 +104,6 @@ class AuthController
     }
   }
 
-
-
-  // Registrar um novo usuário ou autor
   public function register($name, $email, $password, $role)
   {
     if ($this->userModel->emailExists($email)) {
@@ -124,19 +115,17 @@ class AuthController
     if ($role === 'user') {
       if ($this->userModel->registerUser($name, $email, $password, $token)) {
         $this->sendActivationEmail($email, $token);
-        return true; // Agora retorna true em caso de sucesso
+        return true;
       }
     } elseif ($role === 'author') {
       if ($this->authorModel->createAuthor($name, $email, $password, $token)) {
         $this->sendActivationEmail($email, $token);
-        return true; // Agora retorna true em caso de sucesso
+        return true;
       }
     }
     return "Erro ao cadastrar. Tente novamente mais tarde!";
   }
 
-
-  // Ativar conta do usuário pelo token
   public function activateAccount($token)
   {
     error_log("Tentando ativar conta com token: " . $token);
@@ -156,36 +145,24 @@ class AuthController
     }
   }
 
-
-  // Login do usuário
   public function login($email, $password)
   {
     $user = $this->userModel->verifyLogin($email, $password);
 
     if (is_array($user)) {
-      session_start(); // Garante que a sessão está ativa
+      session_start();
 
       $_SESSION['user_id'] = $user['id'];
       $_SESSION['user_name'] = $user['name'];
-      $_SESSION['role'] = $user['role']; // Agora define corretamente se é 'user' ou 'author'
+      $_SESSION['role'] = $user['role'];
 
-      header("Location: ../views/dashboard.php"); // Redireciona para a dashboard
+      header("Location: ../views/dashboard.php");
       exit();
     }
 
-    return $user; // Retorna mensagem de erro se login falhar
+    return $user;
   }
 
-  // Logout do usuário
-  public function logout()
-  {
-    session_start();
-    session_unset();
-    session_destroy();
-    return "Logout realizado com sucesso.";
-  }
-
-  // Recuperação de senha
   public function forgotPassword($email)
   {
     $token = bin2hex(random_bytes(32));
@@ -202,7 +179,6 @@ class AuthController
     return "E-mail não foi encontrado.";
   }
 
-  // Redefinir senha
   public function resetPassword($token, $newPassword)
   {
     $userUpdated = $this->userModel->resetPassword($token, $newPassword);
@@ -214,6 +190,5 @@ class AuthController
 
     return "Token Inválido ou expirado.";
   }
-
 
 }
