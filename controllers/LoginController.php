@@ -19,10 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $message = $auth->login($email, $password);
 
     if ($message === "Login bem-sucedido!") {
-        header("Location: ../views/dashboard.php");
+        header("Location: ../views/login.php");
         exit();
+    } else {
+        header("Location: /../views/dashboard.php");
     }
 }
 
-// Inclui a view do formulário de login
-require_once __DIR__ . '/../views/login.php';
+

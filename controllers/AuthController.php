@@ -40,7 +40,7 @@ class AuthController
       $mail->Subject = 'Ativação de Conta';
       // Corrigindo o link de ativação
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $activationLink = rtrim($baseUrl, '/') . "/CRUD_ARTIGO_AUTOR/controllers/ActivateController.php?token=" . urlencode($token);
+      $activationLink = rtrim($baseUrl, '/') . "/controllers/ActivateController.php?token=" . urlencode($token);
 
       // Corpo do e-mail
       $mail->Body = "
@@ -94,7 +94,7 @@ class AuthController
 
       // Gerar o link de redefinição de senha
       $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-      $resetLink = "$baseUrl/CRUD_ARTIGO_AUTOR/controllers/ResetPasswordController.php?token=$token";
+      $resetLink = "$baseUrl/controllers/ResetPasswordController.php?token=$token";
 
       $mail->Body = "
             <h1>Recuperação de Senha</h1>

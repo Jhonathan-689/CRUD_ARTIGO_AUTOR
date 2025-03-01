@@ -36,6 +36,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 }
-
-// Inclui a view do formulário de cadastro
-require_once __DIR__ . '../views/register.php';
+header("Location: /../views/dashboard.php");
