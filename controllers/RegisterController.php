@@ -25,7 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Verifica se o e-mail já está cadastrado
     $result = $auth->register($name, $email, $password, $role);
 
     if ($result === true) {

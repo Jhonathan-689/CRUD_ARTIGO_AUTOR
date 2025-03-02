@@ -68,7 +68,6 @@ class AuthController
     }
   }
 
-
   private function sendResetEmail($email, $token)
   {
     $mail = new PHPMailer(true);
@@ -80,6 +79,7 @@ class AuthController
       $mail->Password = 'mhil advs laih tlmw';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
       $mail->Port = 587;
+      $mail->CharSet = 'UTF-8';
 
       $mail->setFrom('autoresartigosltcloud@gmail.com', 'Autores Artigos Lt Cloud');
       $mail->addAddress($email);
@@ -171,7 +171,6 @@ class AuthController
     $authorModel = new AuthorModel();
     $userModel = new UserModel();
 
-    // Verifica se o e-mail existe no banco de dados (usuários ou autores)
     $user = $userModel->getUserByEmail($email);
     $author = $authorModel->getAuthorByEmail($email);
 
@@ -179,17 +178,14 @@ class AuthController
       return "Este e-mail não está cadastrado.";
     }
 
-    // Agora que o e-mail existe, geramos o token
     $token = bin2hex(random_bytes(32));
 
-    // Atualiza o token no banco
     if ($user) {
       $userModel->generateResetToken($email, $token);
     } elseif ($author) {
       $authorModel->generateResetToken($email, $token);
     }
 
-    // Envia o e-mail de recuperação
     $this->sendResetEmail($email, $token);
 
     return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";

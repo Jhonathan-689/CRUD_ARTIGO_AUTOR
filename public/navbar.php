@@ -24,5 +24,4 @@
     </div>
 </nav>
 
-<!-- Adicionando um espaço para o conteúdo não ficar escondido atrás da navbar -->
 <div style="margin-top: 70px;"></div>

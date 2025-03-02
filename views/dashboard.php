@@ -144,7 +144,7 @@ unset($_SESSION['message_type']);
                                         <p class="text-danger mt-2 fw-medium	">Nenhum coautor disponível.</p>
                                     <?php endif; ?>
 
-                                    <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar múltiplos
+                                    <small class="text-danger fw-medium">Segure Ctrl (ou Command no Mac) para selecionar ou remover múltiplos
                                         coautores.</small>
                                 </div>
 

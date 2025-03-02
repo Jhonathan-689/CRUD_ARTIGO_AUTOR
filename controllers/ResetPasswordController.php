@@ -15,8 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         header("Location: ../views/forgot_password.php");
         exit();
     }
-
-    // Verifica se o token é válido para usuários ou autores
+    
     $user = $userModel->getUserByToken($token);
     $author = $authorModel->getAuthorByToken($token);
 
@@ -52,11 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Atualiza a senha do usuário ou do autor
     $passwordUpdated = $userModel->resetPassword($token, $newPassword) || $authorModel->resetPassword($token, $newPassword);
 
     if ($passwordUpdated) {
-        // Remove o token da sessão após o uso
         unset($_SESSION['reset_token']);
 
         $_SESSION['message'] = "Senha redefinida com sucesso!";

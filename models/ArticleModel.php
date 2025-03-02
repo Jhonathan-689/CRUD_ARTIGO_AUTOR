@@ -142,7 +142,7 @@ class ArticleModel
       $sql = "DELETE FROM articles_authors
                 WHERE article_id = ?
                   AND author_id IN ($placeholders)
-                  AND is_coauthor = 1";  // Garante que só coautores são removidos
+                  AND is_coauthor = 1";
       $stmt = $this->conn->prepare($sql);
       $stmt->execute(array_merge([$id], array_values($to_remove)));
     }
@@ -178,7 +178,7 @@ class ArticleModel
     $stmt->bindParam(':article_id', $article_id, PDO::PARAM_INT);
     $stmt->execute();
 
-    return $stmt->fetchAll(PDO::FETCH_COLUMN);  // Retorna apenas os IDs dos coautores
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
   }
 
   public function removeAuthorFromArticle($article_id, $author_id)

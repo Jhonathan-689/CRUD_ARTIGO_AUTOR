@@ -63,14 +63,10 @@ unset($_SESSION['message']);
                         <span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status"
                             aria-hidden="true"></span>
                     </button>
-
                 </form>
-
                 <p class="text-center mt-3">Já tem uma conta? <a href="../views/login.php">Faça login</a></p>
             </div>
         </div>
     </div>
-
 </body>
-
 </html>

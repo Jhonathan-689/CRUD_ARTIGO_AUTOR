@@ -10,8 +10,7 @@ require_once __DIR__ . '/../models/ArticleModel.php';
 $articleModel = new ArticleModel();
 $author_id = $_SESSION['user_id'];
 
-// Configuração da paginação
-$articles_per_page = 5;
+$articles_per_page = 2;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $articles_per_page;
 
@@ -56,7 +55,6 @@ unset($_SESSION['message_type']);
             </div>
         <?php endif; ?>
 
-        <!-- Artigos Criados -->
         <h4 class="mt-4">Artigos Criados</h4>
         <?php if (!empty($myArticles)): ?>
             <div class="list-group">
@@ -76,7 +74,6 @@ unset($_SESSION['message_type']);
                 <?php endforeach; ?>
             </div>
 
-            <!-- Paginação -->
             <nav aria-label="Navegação de páginas" class="mt-3">
                 <ul class="pagination justify-content-center">
                     <?php if ($page > 1): ?>
@@ -102,7 +99,6 @@ unset($_SESSION['message_type']);
             <p>Nenhuma publicação criada.</p>
         <?php endif; ?>
 
-        <!-- Artigos como Coautor -->
         <h4 class="mt-4">Artigos como Coautor</h4>
         <?php if (!empty($coauthoredArticles)): ?>
             <div class="list-group">
@@ -119,7 +115,6 @@ unset($_SESSION['message_type']);
                 <?php endforeach; ?>
             </div>
 
-            <!-- Paginação -->
             <nav aria-label="Navegação de páginas" class="mt-3">
                 <ul class="pagination justify-content-center">
                     <?php if ($page > 1): ?>

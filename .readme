@@ -1,0 +1,38 @@
+create database lt_cloud_artigo_autores;
+
+CREATE TABLE authors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    token VARCHAR(255) DEFAULT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE articles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    COLUMN last_edited_by INT NUL
+);
+
+CREATE TABLE articles_authors (
+    article_id INT NOT NULL,
+    author_id INT NOT NULL,
+    is_coauthor TINYINT(1) DEFAULT 0,
+    PRIMARY KEY (article_id, author_id),
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    token VARCHAR(255) DEFAULT NULL,
+    is_active TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

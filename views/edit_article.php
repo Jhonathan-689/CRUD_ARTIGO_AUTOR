@@ -90,7 +90,8 @@ unset($_SESSION['message_type']);
           }
           ?>
         </select>
-        <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar múltiplos coautores.</small>
+        <small class="text-danger fw-medium">Segure Ctrl (ou Command no Mac) para selecionar ou remover múltiplos
+          coautores..</small>
       </div>
 
       <button type="submit" class="btn btn-success">Salvar Alterações</button>

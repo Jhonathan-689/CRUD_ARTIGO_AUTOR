@@ -11,7 +11,6 @@ class UserModel
     $this->conn = $database->connect();
   }
 
-  // cadastrar novo usuário
   public function registerUser($name, $email, $password, $token)
   {
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -111,7 +110,7 @@ class UserModel
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $user ?: false; // Retorna os dados do usuário se encontrar, senão retorna false
+    return $user ?: false;
 }
 
 public function getUserByToken($token)

@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: ../views/dashboard.php");
         exit();
     } else {
-        $_SESSION['message'] = $message; // Armazena a mensagem de erro
+        $_SESSION['message'] = $message;
         $_SESSION['message_type'] = "danger";
         header("Location: ../views/login.php");
         exit();

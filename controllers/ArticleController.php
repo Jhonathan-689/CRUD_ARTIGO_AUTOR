@@ -16,10 +16,10 @@ class ArticleController
         $author_id = $_SESSION['user_id'] ?? null;
 
         if (!empty($title) && !empty($content) && !empty($author_id)) {
-            // Certifica-se de que os coautores estão vindo corretamente
+            
             $coauthors = isset($_POST['coauthors']) ? $_POST['coauthors'] : [];
 
-            // Criar o artigo e adicionar os coautores
+            
             $article_id = $this->articleModel->createArticle($title, $content, $author_id, $coauthors);
 
             if ($article_id) {
@@ -73,7 +73,6 @@ class ArticleController
             if ($article) {
                 $author_id = $_SESSION['user_id'];
 
-                // Remover a associação do artigo com o autor
                 $articleAuthorModel->removeAuthorFromArticle($id, $author_id);
 
                 if ($this->articleModel->deleteArticle($id)) {

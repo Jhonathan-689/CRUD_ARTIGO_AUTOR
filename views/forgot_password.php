@@ -12,11 +12,13 @@ unset($_SESSION['message_type']);
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperação de Senha</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="../public/js/process.js"></script>
 </head>
 
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
@@ -24,21 +26,26 @@ unset($_SESSION['message_type']);
         <div class="card p-4 shadow-lg" style="max-width: 400px; margin: auto;">
             <h2 class="text-center mb-4">Recuperação de Senha</h2>
 
-            <!-- Exibir mensagem de erro ou sucesso -->
             <?php if (!empty($message)): ?>
-                <div class="alert alert-<?php echo htmlspecialchars($message_type); ?> alert-dismissible fade show" role="alert">
+                <div class="alert alert-<?php echo htmlspecialchars($message_type); ?> alert-dismissible fade show"
+                    role="alert">
                     <?php echo htmlspecialchars($message); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
-            <form method="POST" action="../controllers/ForgotPasswordController.php">
+            <form id="myForm" method="POST" action="../controllers/ForgotPasswordController.php" onsubmit="disableButton()">
                 <div class="mb-3">
                     <label for="email" class="form-label">Digite seu e-mail:</label>
                     <input type="email" name="email" id="email" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Enviar</button>
+                <button type="submit" id="submit-btn" class="btn btn-primary w-100">
+                    <span id="btn-text">Enviar</span>
+                    <span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status"
+                        aria-hidden="true"></span>
+                </button>
+
             </form>
 
             <p class="text-center mt-3">
@@ -49,4 +56,5 @@ unset($_SESSION['message_type']);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
