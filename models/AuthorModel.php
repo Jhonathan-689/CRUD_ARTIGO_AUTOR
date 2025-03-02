@@ -67,12 +67,32 @@ class AuthorModel
   public function resetPassword($token, $newPassword)
   {
     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    $stmtCheck = $this->conn->prepare("SELECT id FROM authors WHERE token = :token");
+    $stmtCheck->bindParam(':token', $token);
+    $stmtCheck->execute();
+    $authorExists = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$authorExists) {
+      error_log("ERRO: Token não encontrado na tabela 'authors' para redefinição de senha.");
+      return false;
+    }
+
     $sql = "UPDATE authors SET password = :password, token = NULL WHERE token = :token";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':password', $hashedPassword);
     $stmt->bindParam(':token', $token);
-    return $stmt->execute();
+
+    $executed = $stmt->execute();
+    $rowsAffected = $stmt->rowCount();
+
+    error_log("Tentativa de redefinição de senha para autor. Token: " . $token);
+    error_log("Senha criptografada: " . $hashedPassword);
+    error_log("Linhas afetadas: " . $rowsAffected);
+
+    return $rowsAffected > 0;
   }
+
 
   public function getAllAuthors()
   {
@@ -134,6 +154,5 @@ class AuthorModel
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
   }
-
 
 }

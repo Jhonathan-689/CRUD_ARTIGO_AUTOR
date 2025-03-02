@@ -32,6 +32,7 @@ unset($_SESSION['message_type']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/CRUD_ARTIGO_AUTOR/public/css/style.css">
     <script defer src="../public/js/form-validation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
@@ -135,7 +136,8 @@ unset($_SESSION['message_type']);
 
                                 <div class="mb-3">
                                     <label for="content" class="form-label">Conteúdo do Artigo</label>
-                                    <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                                    <textarea class="form-control" id="content" name="content" rows="6"
+                                        style="resize: none;" required></textarea>
                                 </div>
 
                                 <div class="mb-3">

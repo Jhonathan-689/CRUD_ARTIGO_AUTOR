@@ -55,33 +55,40 @@ class UserModel
 
   public function verifyLogin($email, $password)
   {
-    $sql = "SELECT id, name, password, is_active, 'user' AS role FROM users WHERE email = :email
-            UNION
-            SELECT id, name, password, is_active, 'author' AS role FROM authors WHERE email = :email";
-
+    $sql = "(SELECT id, name, password, is_active, 'user' AS role FROM users WHERE email = :email)
+            UNION ALL
+            (SELECT id, name, password, is_active, 'author' AS role FROM authors WHERE email = :email)
+            LIMIT 1";
 
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':email', $email);
     $stmt->execute();
-
- 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    error_log("Usuário encontrado: " . print_r($user, true));
+
     if (!$user) {
+      error_log("Nenhum usuário encontrado para o email: " . $email);
       return "Credenciais incorretas, tente novamente!";
     }
-    if ($user['role'] === 'user' && !password_verify($password, $user['password'])) {
+
+    if (empty($user['password'])) {
+      error_log("Senha vazia ou NULL no banco para o usuário ID: " . $user['id']);
       return "Credenciais incorretas, tente novamente!";
     }
-    if ($user['role'] === 'author' && !empty($user['password']) && !password_verify($password, $user['password'])) {
+
+    if (!password_verify($password, $user['password'])) {
+      error_log("Senha incorreta para o usuário ID: " . $user['id']);
       return "Credenciais incorretas, tente novamente!";
     }
+
     if ($user['is_active'] == 0) {
+      error_log("Conta não ativada para o usuário ID: " . $user['id']);
       return "Conta não ativada. Verifique seu e-mail.";
     }
+
     return $user;
   }
-
 
   public function generateResetToken($email, $token)
   {
@@ -95,15 +102,34 @@ class UserModel
   public function resetPassword($token, $newPassword)
   {
     $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+    $stmtCheck = $this->conn->prepare("SELECT id FROM users WHERE token = :token");
+    $stmtCheck->bindParam(':token', $token);
+    $stmtCheck->execute();
+    $userExists = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$userExists) {
+      error_log("ERRO: Token não encontrado na tabela 'users' para redefinição de senha.");
+      return false;
+    }
+
     $sql = "UPDATE users SET password = :password, token = NULL WHERE token = :token";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':password', $hashedPassword);
     $stmt->bindParam(':token', $token);
-    return $stmt->execute();
+
+    $executed = $stmt->execute();
+    $rowsAffected = $stmt->rowCount();
+
+    error_log("Tentativa de redefinição de senha para usuário. Token: " . $token);
+    error_log("Senha criptografada: " . $hashedPassword);
+    error_log("Linhas afetadas: " . $rowsAffected);
+
+    return $rowsAffected > 0;
   }
 
   public function getUserByEmail($email)
-{
+  {
     $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':email', $email);
@@ -111,15 +137,15 @@ class UserModel
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $user ?: false;
-}
+  }
 
-public function getUserByToken($token)
-{
+  public function getUserByToken($token)
+  {
     $sql = "SELECT * FROM users WHERE token = :token LIMIT 1";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':token', $token);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
-}
+  }
 
 }

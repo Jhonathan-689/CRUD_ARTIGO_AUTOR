@@ -149,18 +149,16 @@ class AuthController
   {
     $user = $this->userModel->verifyLogin($email, $password);
 
-    if (is_array($user)) {
-      session_start();
-
-      $_SESSION['user_id'] = $user['id'];
-      $_SESSION['user_name'] = $user['name'];
-      $_SESSION['role'] = $user['role'];
-
-      header("Location: ../views/dashboard.php");
-      exit();
+    if (!$user || !is_array($user)) {
+      return "Credenciais incorretas, tente novamente!";
     }
 
-    return $user;
+    session_start();
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['name'];
+    $_SESSION['role'] = $user['role'];
+
+    return "Login bem-sucedido!";
   }
 
   public function forgotPassword($email)

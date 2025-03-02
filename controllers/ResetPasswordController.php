@@ -15,11 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         header("Location: ../views/forgot_password.php");
         exit();
     }
-    
+
     $user = $userModel->getUserByToken($token);
     $author = $authorModel->getAuthorByToken($token);
 
     if (!$user && !$author) {
+        error_log("ERRO: Token inválido ou expirado.");
         $_SESSION['message'] = "Token inválido ou expirado.";
         $_SESSION['message_type'] = "danger";
         header("Location: ../views/forgot_password.php");
@@ -38,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirmPassword = trim($_POST['confirm_password'] ?? '');
 
     if (empty($token)) {
+        error_log("ERRO: Token de redefinição vazio.");
         $_SESSION['message'] = "Token inválido.";
         $_SESSION['message_type'] = "danger";
         header("Location: ../views/forgot_password.php");
@@ -45,22 +47,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($newPassword !== $confirmPassword) {
+        error_log("ERRO: Senhas não coincidem.");
         $_SESSION['message'] = "As senhas não coincidem.";
         $_SESSION['message_type'] = "danger";
         header("Location: ../views/reset_password.php");
         exit();
     }
 
-    $passwordUpdated = $userModel->resetPassword($token, $newPassword) || $authorModel->resetPassword($token, $newPassword);
+    // Verifica se o token pertence a um user ou author antes de atualizar
+    error_log("Tentando redefinir senha para users com token: " . $token);
+    $passwordUpdated = $userModel->resetPassword($token, $newPassword);
+
+    if (!$passwordUpdated) {
+        error_log("Redefinição falhou para users, tentando para authors...");
+        $passwordUpdated = $authorModel->resetPassword($token, $newPassword);
+    }
 
     if ($passwordUpdated) {
         unset($_SESSION['reset_token']);
-
+        error_log("Senha redefinida com sucesso!");
         $_SESSION['message'] = "Senha redefinida com sucesso!";
         $_SESSION['message_type'] = "success";
         header("Location: ../views/login.php");
         exit();
     } else {
+        error_log("ERRO: Token inválido ou expirado.");
         $_SESSION['message'] = "Token inválido ou expirado.";
         $_SESSION['message_type'] = "danger";
         header("Location: ../views/reset_password.php");
