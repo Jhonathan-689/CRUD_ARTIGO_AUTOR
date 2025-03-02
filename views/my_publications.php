@@ -9,18 +9,21 @@ require_once __DIR__ . '/../models/ArticleModel.php';
 
 $articleModel = new ArticleModel();
 $author_id = $_SESSION['user_id'];
-$articles = $articleModel->getUserArticles($author_id);
 
-$myArticles = [];
-$coauthoredArticles = [];
+// Configuração da paginação
+$articles_per_page = 5;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$offset = ($page - 1) * $articles_per_page;
 
-foreach ($articles as $article) {
-    if ($article['is_coauthor'] == 0) {
-        $myArticles[] = $article;
-    } else {
-        $coauthoredArticles[] = $article;
-    }
-}
+// Obtem total de artigos criados e como coautor
+$total_my_articles = $articleModel->countUserArticles($author_id, false);
+$total_coauthored_articles = $articleModel->countUserArticles($author_id, true);
+
+$total_pages_my = ceil($total_my_articles / $articles_per_page);
+$total_pages_coauthored = ceil($total_coauthored_articles / $articles_per_page);
+
+$myArticles = $articleModel->getUserArticlesPaginated($author_id, $articles_per_page, $offset, false);
+$coauthoredArticles = $articleModel->getUserArticlesPaginated($author_id, $articles_per_page, $offset, true);
 
 $message = $_SESSION['message'] ?? '';
 $message_type = $_SESSION['message_type'] ?? 'info';
@@ -40,32 +43,11 @@ unset($_SESSION['message_type']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Artigo Autores Lt Cloud</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../views/dashboard.php">Início</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="my_publications.php">Minhas Publicações</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="../controllers/logoutController.php">Sair</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="d-flex flex-column min-vh-100">
+    <?php include __DIR__ . '/../public/navbar.php'; ?>
 
-    <div class="container mt-5">
-        <h2>Minhas Publicações</h2>
+    <main class="container mt-5 content">
+        <h2 class="mb-4">Minhas Publicações</h2>
 
         <?php if (!empty($message)): ?>
             <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
@@ -74,57 +56,95 @@ unset($_SESSION['message_type']);
             </div>
         <?php endif; ?>
 
+        <!-- Artigos Criados -->
         <h4 class="mt-4">Artigos Criados</h4>
         <?php if (!empty($myArticles)): ?>
-            <ul class="list-group">
+            <div class="list-group">
                 <?php foreach ($myArticles as $article): ?>
-                    <li class="list-group-item">
+                    <div class="list-group-item">
                         <h5><?php echo htmlspecialchars($article['title']); ?></h5>
                         <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
-                        <small><strong>Publicado em:</strong>
-                            <?php echo date('d/m/Y H:i', strtotime($article['created_at'])); ?></small>
+                        <small><strong>Publicado em:</strong> <?php echo date('d/m/Y H:i', strtotime($article['created_at'])); ?></small>
                         <br>
                         <small><strong>Última edição por:</strong>
-                            <?php echo ($article['last_edited_by'] == $_SESSION['user_id']) ? "Você" : "Coautor"; ?>
+                            <?php echo ($article['last_edited_by'] == $_SESSION['user_id']) ? "Você" : htmlspecialchars($article['last_edited_name']); ?>
                         </small>
                         <br>
-                        <a href="edit_article.php?id=<?php echo $article['id']; ?>"
-                            class="btn btn-warning btn-sm mt-2">Editar</a>
-                        <button class="btn btn-danger btn-sm mt-2"
-                            onclick="deleteArticle(<?php echo $article['id']; ?>)">Excluir</button>
-                    </li>
+                        <a href="edit_article.php?id=<?php echo $article['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" onclick="deleteArticle(<?php echo $article['id']; ?>)">Excluir</button>
+                    </div>
                 <?php endforeach; ?>
-            </ul>
+            </div>
+
+            <!-- Paginação -->
+            <nav aria-label="Navegação de páginas" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    <?php if ($page > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page - 1; ?>">Anterior</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $total_pages_my; $i++): ?>
+                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_pages_my): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page + 1; ?>">Próxima</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         <?php else: ?>
             <p>Nenhuma publicação criada.</p>
         <?php endif; ?>
 
+        <!-- Artigos como Coautor -->
         <h4 class="mt-4">Artigos como Coautor</h4>
         <?php if (!empty($coauthoredArticles)): ?>
-            <ul class="list-group">
+            <div class="list-group">
                 <?php foreach ($coauthoredArticles as $article): ?>
-                    <li class="list-group-item">
+                    <div class="list-group-item">
                         <h5><?php echo htmlspecialchars($article['title']); ?></h5>
                         <p><?php echo nl2br(htmlspecialchars($article['content'])); ?></p>
-                        <small><strong>Publicado em:</strong>
-                            <?php echo date('d/m/Y H:i', strtotime($article['created_at'])); ?></small>
+                        <small><strong>Publicado em:</strong> <?php echo date('d/m/Y H:i', strtotime($article['created_at'])); ?></small>
                         <br>
-                        <small><strong>Última edição por:</strong>
-                            <?php
-                            echo htmlspecialchars($article['last_edited_name']);
-                            ?>
-                        </small>
+                        <small><strong>Última edição por:</strong> <?php echo htmlspecialchars($article['last_edited_name']); ?></small>
                         <br>
-                        <a href="edit_article.php?id=<?php echo $article['id']; ?>"
-                            class="btn btn-warning btn-sm mt-2">Editar</a>
-                    </li>
+                        <a href="edit_article.php?id=<?php echo $article['id']; ?>" class="btn btn-warning btn-sm">Editar</a>
+                    </div>
                 <?php endforeach; ?>
-            </ul>
+            </div>
+
+            <!-- Paginação -->
+            <nav aria-label="Navegação de páginas" class="mt-3">
+                <ul class="pagination justify-content-center">
+                    <?php if ($page > 1): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page - 1; ?>">Anterior</a>
+                        </li>
+                    <?php endif; ?>
+
+                    <?php for ($i = 1; $i <= $total_pages_coauthored; $i++): ?>
+                        <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <?php if ($page < $total_pages_coauthored): ?>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<?php echo $page + 1; ?>">Próxima</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
         <?php else: ?>
             <p>Você ainda não participa como coautor de nenhum artigo.</p>
         <?php endif; ?>
-    </div>
-
+    </main>
     <script>
         function deleteArticle(articleId) {
             if (confirm("Tem certeza que deseja excluir este artigo?")) {

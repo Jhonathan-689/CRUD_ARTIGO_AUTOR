@@ -39,34 +39,11 @@ unset($_SESSION['message_type']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Artigo Autores Lt Cloud</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Início</a>
-                    </li>
-                    <?php if ($_SESSION['role'] === 'author'): ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="my_publications.php">Minhas Publicações</a>
-                        </li>
-                    <?php endif; ?>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="../controllers/logoutController.php">Sair</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body class="d-flex flex-column min-vh-100 overflow-hidden">
+    <?php include __DIR__ . '/../public/navbar.php'; ?>
 
-    <div class="container mt-4">
-        <div class="row justify-content-center">
+    <div class="container d-flex flex-column align-items-center justify-content-center flex-grow-1">
+        <div class="row w-100 justify-content-center">
             <div class="col-lg-8 col-md-10 col-12">
 
                 <?php if (!empty($message)): ?>
@@ -79,9 +56,9 @@ unset($_SESSION['message_type']);
                 <div class="greeting mb-4 text-center">
                     <h2>Bem-vindo, <?php echo htmlspecialchars($_SESSION['user_name']); ?>!</h2>
                 </div>
-                
+
                 <?php if ($_SESSION['role'] === 'user'): ?>
-                    <div class="card mt-4">
+                    <div class="card mt-3">
                         <div class="card-header">
                             <h4>Publicações de Autores</h4>
                         </div>
@@ -132,50 +109,41 @@ unset($_SESSION['message_type']);
                 <?php endif; ?>
 
                 <?php if ($_SESSION['role'] === 'author'): ?>
-                    <div class="container mt-4 pb-5">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8 col-md-10 col-12">
+                    <div class="card mt-3 w-100">
+                        <div class="card-header">
+                            <h4>Escrever Artigo</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="../controllers/ArticleController.php" method="POST">
+                                <input type="hidden" name="action" value="create">
 
-                                <div class="card mt-0 mb-5">
-                                    <div class="card-header">
-                                        <h4>Escrever Artigo</h4>
-                                    </div>
-                                    <div class="card-body pt-3">
-                                        <form action="../controllers/ArticleController.php" method="POST">
-                                            <input type="hidden" name="action" value="create">
-
-                                            <div class="mb-3">
-                                                <label for="title" class="form-label">Título do Artigo</label>
-                                                <input type="text" class="form-control" id="title" name="title" required>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="content" class="form-label">Conteúdo do Artigo</label>
-                                                <textarea class="form-control" id="content" name="content" rows="6"
-                                                    required></textarea>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="coauthors" class="form-label">Adicionar Coautores</label>
-                                                <select class="form-control" id="coauthors" name="coauthors[]" multiple>
-                                                    <?php
-                                                    foreach ($authors as $author) {
-                                                        if ($author['id'] != $_SESSION['user_id']) {
-                                                            echo "<option value='{$author['id']}'>{$author['name']}</option>";
-                                                        }
-                                                    }
-                                                    ?>
-                                                </select>
-                                                <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar
-                                                    múltiplos coautores.</small>
-                                            </div>
-
-                                            <button type="submit" class="btn btn-primary">Publicar Artigo</button>
-                                        </form>
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Título do Artigo</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
                                 </div>
 
-                            </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Conteúdo do Artigo</label>
+                                    <textarea class="form-control" id="content" name="content" rows="6" required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="coauthors" class="form-label">Adicionar Coautores</label>
+                                    <select class="form-control" id="coauthors" name="coauthors[]" multiple>
+                                        <?php
+                                        foreach ($authors as $author) {
+                                            if ($author['id'] != $_SESSION['user_id']) {
+                                                echo "<option value='{$author['id']}'>{$author['name']}</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar
+                                        múltiplos coautores.</small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">Publicar Artigo</button>
+                            </form>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -183,6 +151,7 @@ unset($_SESSION['message_type']);
             </div>
         </div>
     </div>
+    
 
 </body>
 

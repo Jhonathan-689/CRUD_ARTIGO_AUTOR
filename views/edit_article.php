@@ -42,6 +42,7 @@ unset($_SESSION['message_type']);
 </head>
 
 <body>
+  <?php include __DIR__ . '/../public/navbar.php'; ?>
   <div class="container mt-5">
     <h2>Editar Artigo</h2>
 

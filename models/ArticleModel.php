@@ -14,22 +14,25 @@ class ArticleModel
 
   public function createArticle($title, $content, $author_id, $coauthors = [])
   {
-    $sql = "INSERT INTO articles (title, content, created_at) VALUES (:title, :content, NOW())";
+    $sql = "INSERT INTO articles (title, content, created_at, last_edited_by) 
+            VALUES (:title, :content, NOW(), :last_edited_by)";
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':content', $content);
+    $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+    $stmt->bindParam(':content', $content, PDO::PARAM_STR);
+    $stmt->bindParam(':last_edited_by', $author_id, PDO::PARAM_INT);
 
     if ($stmt->execute()) {
       $article_id = $this->conn->lastInsertId();
 
       // Insere o autor principal
-      $sql = "INSERT INTO articles_authors (article_id, author_id, is_coauthor) VALUES (:article_id, :author_id, 0)";
+      $sql = "INSERT INTO articles_authors (article_id, author_id, is_coauthor) 
+                VALUES (:article_id, :author_id, 0)";
       $stmt = $this->conn->prepare($sql);
       $stmt->bindParam(':article_id', $article_id, PDO::PARAM_INT);
       $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
       $stmt->execute();
 
-      // Insere os coautores se houver
+      // Insere os coautores, se houver
       if (!empty($coauthors)) {
         $this->associateAuthorsToArticle($article_id, $coauthors);
       }
@@ -38,7 +41,6 @@ class ArticleModel
     }
     return false;
   }
-
   public function associateAuthorsToArticle($article_id, $coauthors)
   {
     $sql = "INSERT INTO articles_authors (article_id, author_id, is_coauthor) VALUES (:article_id, :author_id, 1)";
@@ -166,8 +168,6 @@ class ArticleModel
     return true;
   }
 
-
-
   private function getCoauthorsIdsByArticle($article_id)
   {
     $sql = "SELECT author_id 
@@ -189,8 +189,6 @@ class ArticleModel
     $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
     return $stmt->execute();
   }
-
-
 
   public function removeCoauthorsFromArticle($article_id, $main_author_id, $coauthors)
   {
@@ -221,7 +219,6 @@ class ArticleModel
     $stmt->bindParam(':id', $id);
     return $stmt->execute();
   }
-
   public function getPaginatedArticles($limit, $offset)
   {
     $sql = "SELECT a.id, a.title, a.content, a.created_at, 
@@ -247,6 +244,45 @@ class ArticleModel
     $stmt = $this->conn->prepare($sql);
     $stmt->execute();
     return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+  }
+
+  public function countUserArticles($author_id, $is_coauthor = false)
+  {
+    $sql = "SELECT COUNT(DISTINCT a.id) AS total 
+            FROM articles a
+            JOIN articles_authors aa ON a.id = aa.article_id
+            WHERE aa.author_id = :author_id 
+              AND aa.is_coauthor = :is_coauthor";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
+    $stmt->bindParam(':is_coauthor', $is_coauthor, PDO::PARAM_BOOL);
+    $stmt->execute();
+
+    return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+  }
+
+  public function getUserArticlesPaginated($author_id, $limit, $offset, $is_coauthor = false)
+  {
+    $sql = "SELECT a.id, a.title, a.content, a.created_at, a.last_edited_by, 
+                   aa.is_coauthor, 
+                   COALESCE(auth.name, 'Autor original') AS last_edited_name
+            FROM articles a
+            JOIN articles_authors aa ON a.id = aa.article_id
+            LEFT JOIN authors auth ON auth.id = a.last_edited_by
+            WHERE aa.author_id = :author_id 
+              AND aa.is_coauthor = :is_coauthor
+            ORDER BY a.created_at DESC
+            LIMIT :limit OFFSET :offset";
+
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':author_id', $author_id, PDO::PARAM_INT);
+    $stmt->bindParam(':is_coauthor', $is_coauthor, PDO::PARAM_BOOL);
+    $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+    $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 }
 
