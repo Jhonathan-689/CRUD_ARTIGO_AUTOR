@@ -14,7 +14,7 @@ unset($_SESSION['message']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../public/css/style.css">
-    <link rel="stylesheet" href="../public/js/process.js">
+    <script defer src="../public/js/process.js"></script>
     <script defer src="../public/js/form-validation.js"></script>
 </head>
 
