@@ -6,8 +6,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'author') {
 }
 
 require_once __DIR__ . '/../models/ArticleModel.php';
+require_once __DIR__ . '/../models/ArticleAuthorModel.php';
+require_once __DIR__ . '/../models/AuthorModel.php';
 
 $articleModel = new ArticleModel();
+$articleAuthorModel = new ArticleAuthorModel();
+$authorModel = new AuthorModel();
+
 $article = $articleModel->getArticleById($_GET['id'] ?? null);
 
 if (!$article) {
@@ -16,6 +21,9 @@ if (!$article) {
   header("Location: ../views/my_publications.php");
   exit();
 }
+
+$coauthors = $articleAuthorModel->getAuthorsByArticle($article['id']);
+$allAuthors = $authorModel->getAllAuthors();
 
 $message = $_SESSION['message'] ?? '';
 $message_type = $_SESSION['message_type'] ?? 'info';
@@ -60,9 +68,34 @@ unset($_SESSION['message_type']);
           required><?php echo htmlspecialchars($article['content']); ?></textarea>
       </div>
 
+      <div class="mb-3">
+        <label for="coauthors" class="form-label">Coautores</label>
+        <select class="form-control" id="coauthors" name="coauthors[]" multiple>
+          <?php
+          require_once __DIR__ . '/../models/ArticleAuthorModel.php';
+          require_once __DIR__ . '/../models/AuthorModel.php';
+
+          $articleAuthorModel = new ArticleAuthorModel();
+          $authorModel = new AuthorModel();
+
+          $coauthors = $articleAuthorModel->getAuthorsByArticle($article['id']);
+          $allAuthors = $authorModel->getAllAuthors();
+
+          foreach ($allAuthors as $author) {
+            if ($author['id'] !== $_SESSION['user_id']) { // Evita listar o autor principal como coautor
+              $selected = in_array($author['id'], array_column($coauthors, 'id')) ? 'selected' : '';
+              echo "<option value='{$author['id']}' $selected>{$author['name']}</option>";
+            }
+          }
+          ?>
+        </select>
+        <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar múltiplos coautores.</small>
+      </div>
+
       <button type="submit" class="btn btn-success">Salvar Alterações</button>
       <a href="my_publications.php" class="btn btn-secondary">Cancelar</a>
     </form>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
