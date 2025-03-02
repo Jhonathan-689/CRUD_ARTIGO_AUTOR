@@ -112,7 +112,6 @@ class ArticleModel
 
   public function updateArticle($id, $title, $content, $new_coauthors, $main_author_id)
   {
-    // 1) Atualiza o título e o conteúdo do artigo
     $sql = "UPDATE articles SET title = :title, content = :content, last_edited_by = :last_edited_by WHERE id = :id";
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -121,22 +120,17 @@ class ArticleModel
     $stmt->bindParam(':last_edited_by', $main_author_id, PDO::PARAM_INT);
     $stmt->execute();
 
-    // 2) Obtém os coautores atuais (exclui o autor principal)
     $old_coauthors = $this->getCoauthorsIdsByArticle($id);
 
-    // 3) Garante que o autor principal não seja removido
     $new_coauthors = array_diff($new_coauthors, [$main_author_id]);
 
-    // 4) Adiciona automaticamente o usuário que está editando para evitar que ele se remova sem querer
     if (!in_array($main_author_id, $new_coauthors)) {
       $new_coauthors[] = $main_author_id;
     }
 
-    // 5) Calcula os coautores que devem ser removidos e adicionados
     $to_remove = array_diff($old_coauthors, $new_coauthors);
     $to_add = array_diff($new_coauthors, $old_coauthors);
 
-    // 6) Remover os coautores antigos (com is_coauthor = 1)
     if (!empty($to_remove)) {
       $placeholders = implode(',', array_fill(0, count($to_remove), '?'));
       $sql = "DELETE FROM articles_authors
@@ -147,7 +141,6 @@ class ArticleModel
       $stmt->execute(array_merge([$id], array_values($to_remove)));
     }
 
-    // 7) Adiciona os novos coautores apenas se ainda não existirem
     if (!empty($to_add)) {
       $sql = "INSERT INTO articles_authors (article_id, author_id, is_coauthor)
                 SELECT :article_id, :author_id, 1 FROM DUAL
