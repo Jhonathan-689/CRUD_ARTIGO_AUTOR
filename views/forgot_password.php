@@ -1,11 +1,9 @@
 <?php
 session_start();
 
-// Verifica se há mensagem na sessão antes de apagá-la
 $message = $_SESSION['message'] ?? null;
 $message_type = $_SESSION['message_type'] ?? 'info';
 
-// Apaga a mensagem da sessão somente depois de exibi-la
 unset($_SESSION['message']);
 unset($_SESSION['message_type']);
 ?>
