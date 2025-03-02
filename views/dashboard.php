@@ -1,23 +1,21 @@
 <?php
-session_start();
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../views/login.php");
-    exit();
-}
-
 require_once __DIR__ . '/../models/ArticleModel.php';
 require_once __DIR__ . '/../models/AuthorModel.php';
+require_once __DIR__ . '/../controllers/ArticleController.php';
 
 $articleModel = new ArticleModel();
 $authorModel = new AuthorModel();
 
-$articles_per_page = 5;
+$articles_per_page = 4;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
-$offset = ($page - 1) * $articles_per_page;
-$total_articles = $articleModel->countAllArticles();
-$total_pages = ceil($total_articles / $articles_per_page);
 
-$articles = $articleModel->getPaginatedArticles($articles_per_page, $offset);
+$articleController = new ArticleController();
+$paginationData = $articleController->getPaginatedArticles($page, $articles_per_page);
+
+$articles = $paginationData['articles'];
+$total_pages = $paginationData['total_pages'];
+$current_page = $paginationData['current_page'];
+
 $authors = $authorModel->getAllAuthors();
 
 $message = $_SESSION['message'] ?? '';
@@ -40,6 +38,18 @@ unset($_SESSION['message_type']);
 
 <body class="d-flex flex-column min-vh-100 overflow-hidden">
     <?php include __DIR__ . '/../public/navbar.php'; ?>
+    <?php
+
+    $articles_per_page = 4;
+    $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+
+    $articleController = new ArticleController();
+    $paginationData = $articleController->getPaginatedArticles($page, $articles_per_page);
+
+    $articles = $paginationData['articles'];
+    $total_pages = $paginationData['total_pages'];
+    $current_page = $paginationData['current_page'];
+    ?>
 
     <div class="container d-flex flex-column align-items-center justify-content-center flex-grow-1">
         <div class="row w-100 justify-content-center">
@@ -78,27 +88,29 @@ unset($_SESSION['message_type']);
                                     <?php endforeach; ?>
                                 </ul>
 
-                                <nav aria-label="Navegação de páginas" class="mt-3">
-                                    <ul class="pagination justify-content-center">
-                                        <?php if ($page > 1): ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $page - 1; ?>">Anterior</a>
-                                            </li>
-                                        <?php endif; ?>
+                                <?php if ($total_pages > 1): ?>
+                                    <nav aria-label="Navegação de páginas" class="mt-3">
+                                        <ul class="pagination justify-content-center">
+                                            <?php if ($current_page > 1): ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=<?php echo $current_page - 1; ?>">Anterior</a>
+                                                </li>
+                                            <?php endif; ?>
 
-                                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                            <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
-                                                <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                            </li>
-                                        <?php endfor; ?>
+                                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                                <li class="page-item <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                                                    <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                                </li>
+                                            <?php endfor; ?>
 
-                                        <?php if ($page < $total_pages): ?>
-                                            <li class="page-item">
-                                                <a class="page-link" href="?page=<?php echo $page + 1; ?>">Próxima</a>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
-                                </nav>
+                                            <?php if ($current_page < $total_pages): ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page=<?php echo $current_page + 1; ?>">Próxima</a>
+                                                </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </nav>
+                                <?php endif; ?>
 
                             <?php else: ?>
                                 <p class="text-center">Nenhuma publicação disponível no momento.</p>
@@ -141,10 +153,11 @@ unset($_SESSION['message_type']);
                                     </select>
 
                                     <?php if (empty($authors)): ?>
-                                        <p class="text-danger mt-2 fw-medium	">Nenhum coautor disponível.</p>
+                                        <p class="text-danger mt-2 fw-medium">Nenhum coautor disponível.</p>
                                     <?php endif; ?>
 
-                                    <small class="text-danger fw-medium">Segure Ctrl (ou Command no Mac) para selecionar ou remover múltiplos
+                                    <small class="text-danger fw-medium">Segure Ctrl (ou Command no Mac) para selecionar ou
+                                        remover múltiplos
                                         coautores.</small>
                                 </div>
 
@@ -153,11 +166,11 @@ unset($_SESSION['message_type']);
                         </div>
                     </div>
                 <?php endif; ?>
-
             </div>
         </div>
     </div>
 
 </body>
+
 
 </html>

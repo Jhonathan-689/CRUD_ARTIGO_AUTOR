@@ -16,10 +16,10 @@ class ArticleController
         $author_id = $_SESSION['user_id'] ?? null;
 
         if (!empty($title) && !empty($content) && !empty($author_id)) {
-            
+
             $coauthors = isset($_POST['coauthors']) ? $_POST['coauthors'] : [];
 
-            
+
             $article_id = $this->articleModel->createArticle($title, $content, $author_id, $coauthors);
 
             if ($article_id) {
@@ -60,6 +60,31 @@ class ArticleController
         exit();
     }
 
+    public function getPaginatedArticles($page, $articles_per_page)
+    {
+        $total_articles = $this->articleModel->countAllArticles();
+        $total_pages = ceil($total_articles / $articles_per_page);
+
+        if ($total_articles > 0 && $page > $total_pages) {
+            $page = max(1, $total_pages);
+        }
+
+        $offset = ($page - 1) * $articles_per_page;
+
+        $articles = $this->articleModel->getPaginatedArticles($articles_per_page, $offset);
+
+        if (empty($articles) && $page > 1) {
+            return $this->getPaginatedArticles($page - 1, $articles_per_page);
+        }
+
+        return [
+            'articles' => $articles,
+            'total_articles' => $total_articles,
+            'total_pages' => $total_pages,
+            'current_page' => $page
+        ];
+    }
+
     public function delete($id)
     {
         if (!empty($id) && is_numeric($id)) {
@@ -91,6 +116,7 @@ class ArticleController
     }
 }
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['action'], $_GET['id']) && $_GET['action'] === 'delete') {
     $controller = new ArticleController();
     $controller->delete($_GET['id']);
@@ -117,8 +143,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+
     $_SESSION['message'] = "Erro ao processar a requisição.";
     $_SESSION['message_type'] = "danger";
     header("Location: ../views/my_publications.php");
     exit();
+
 }
