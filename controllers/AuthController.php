@@ -107,7 +107,7 @@ class AuthController
   public function register($name, $email, $password, $role)
   {
     if ($this->userModel->emailExists($email)) {
-      return "Erro: este e-mail já está cadastrado!";
+      return "Este e-mail já está cadastrado!";
     }
 
     $token = bin2hex(random_bytes(32));
@@ -165,18 +165,34 @@ class AuthController
 
   public function forgotPassword($email)
   {
-    $token = bin2hex(random_bytes(32));
+    require_once __DIR__ . '/../models/AuthorModel.php';
+    require_once __DIR__ . '/../models/UserModel.php';
 
-    $userUpdated = $this->userModel->generateResetToken($email, $token);
-    $authorUpdated = $this->authorModel->generateResetToken($email, $token);
+    $authorModel = new AuthorModel();
+    $userModel = new UserModel();
 
-    if ($userUpdated || $authorUpdated) {
+    // Verifica se o e-mail existe no banco de dados (usuários ou autores)
+    $user = $userModel->getUserByEmail($email);
+    $author = $authorModel->getAuthorByEmail($email);
 
-      $this->sendResetEmail($email, $token);
-      return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";
+    if (!$user && !$author) {
+      return "Este e-mail não está cadastrado.";
     }
 
-    return "E-mail não foi encontrado.";
+    // Agora que o e-mail existe, geramos o token
+    $token = bin2hex(random_bytes(32));
+
+    // Atualiza o token no banco
+    if ($user) {
+      $userModel->generateResetToken($email, $token);
+    } elseif ($author) {
+      $authorModel->generateResetToken($email, $token);
+    }
+
+    // Envia o e-mail de recuperação
+    $this->sendResetEmail($email, $token);
+
+    return "Um e-mail foi enviado, verifique para fazer a redefinição de senha.";
   }
 
   public function resetPassword($token, $newPassword)

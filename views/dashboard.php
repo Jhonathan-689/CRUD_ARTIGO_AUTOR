@@ -11,7 +11,6 @@ require_once __DIR__ . '/../models/AuthorModel.php';
 $articleModel = new ArticleModel();
 $authorModel = new AuthorModel();
 
-// Paginação para usuários
 $articles_per_page = 5;
 $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 $offset = ($page - 1) * $articles_per_page;
@@ -130,16 +129,23 @@ unset($_SESSION['message_type']);
                                 <div class="mb-3">
                                     <label for="coauthors" class="form-label">Adicionar Coautores</label>
                                     <select class="form-control" id="coauthors" name="coauthors[]" multiple>
-                                        <?php
-                                        foreach ($authors as $author) {
-                                            if ($author['id'] != $_SESSION['user_id']) {
-                                                echo "<option value='{$author['id']}'>{$author['name']}</option>";
-                                            }
-                                        }
-                                        ?>
+                                        <?php if (!empty($authors)): ?>
+                                            <?php foreach ($authors as $author): ?>
+                                                <?php if ($author['id'] != $_SESSION['user_id']): ?>
+                                                    <option value="<?= htmlspecialchars($author['id']) ?>">
+                                                        <?= htmlspecialchars($author['name']) ?>
+                                                    </option>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
                                     </select>
-                                    <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar
-                                        múltiplos coautores.</small>
+
+                                    <?php if (empty($authors)): ?>
+                                        <p class="text-danger mt-2 fw-medium	">Nenhum coautor disponível.</p>
+                                    <?php endif; ?>
+
+                                    <small class="text-muted">Segure Ctrl (ou Command no Mac) para selecionar múltiplos
+                                        coautores.</small>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Publicar Artigo</button>
@@ -151,7 +157,6 @@ unset($_SESSION['message_type']);
             </div>
         </div>
     </div>
-    
 
 </body>
 

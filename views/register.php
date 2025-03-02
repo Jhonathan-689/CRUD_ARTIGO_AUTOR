@@ -1,11 +1,12 @@
 <?php
 session_start();
-$message = $_SESSION['message'] ?? ''; 
+$message = $_SESSION['message'] ?? '';
 unset($_SESSION['message']);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +14,7 @@ unset($_SESSION['message']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="../public/js/process.js">
     <script defer src="../public/js/form-validation.js"></script>
 </head>
 
@@ -25,7 +27,8 @@ unset($_SESSION['message']);
 
                 <?php include 'feedback.php'; ?>
 
-                <form id="registerForm" method="POST" action="../controllers/RegisterController.php">
+                <form id="registerForm" method="POST" action="../controllers/RegisterController.php"
+                    onsubmit="disableButton()">
                     <div class="mb-3">
                         <label for="name" class="form-label">Nome:</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -43,7 +46,8 @@ unset($_SESSION['message']);
 
                     <div class="mb-3">
                         <label for="confirm_password" class="form-label">Confirme a Senha:</label>
-                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                            required>
                     </div>
 
                     <div class="mb-3">
@@ -54,7 +58,12 @@ unset($_SESSION['message']);
                         </select>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+                    <button type="submit" id="submit-btn" class="btn btn-primary w-100">
+                        <span id="btn-text">Cadastrar</span>
+                        <span id="loading-spinner" class="spinner-border spinner-border-sm d-none" role="status"
+                            aria-hidden="true"></span>
+                    </button>
+
                 </form>
 
                 <p class="text-center mt-3">Já tem uma conta? <a href="../views/login.php">Faça login</a></p>
@@ -63,4 +72,5 @@ unset($_SESSION['message']);
     </div>
 
 </body>
+
 </html>

@@ -1,7 +1,11 @@
 <?php
 session_start();
-$message = $_SESSION['message'] ?? '';
+
+// Verifica se há mensagem na sessão antes de apagá-la
+$message = $_SESSION['message'] ?? null;
 $message_type = $_SESSION['message_type'] ?? 'info';
+
+// Apaga a mensagem da sessão somente depois de exibi-la
 unset($_SESSION['message']);
 unset($_SESSION['message_type']);
 ?>
@@ -20,8 +24,9 @@ unset($_SESSION['message_type']);
         <div class="card p-4 shadow-lg" style="max-width: 400px; margin: auto;">
             <h2 class="text-center mb-4">Recuperação de Senha</h2>
 
+            <!-- Exibir mensagem de erro ou sucesso -->
             <?php if (!empty($message)): ?>
-                <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show" role="alert">
+                <div class="alert alert-<?php echo htmlspecialchars($message_type); ?> alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($message); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>

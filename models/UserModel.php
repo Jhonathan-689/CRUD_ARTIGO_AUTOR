@@ -102,4 +102,25 @@ class UserModel
     $stmt->bindParam(':token', $token);
     return $stmt->execute();
   }
+
+  public function getUserByEmail($email)
+{
+    $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':email', $email);
+    $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $user ?: false; // Retorna os dados do usuário se encontrar, senão retorna false
+}
+
+public function getUserByToken($token)
+{
+    $sql = "SELECT * FROM users WHERE token = :token LIMIT 1";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':token', $token);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: false;
+}
+
 }
