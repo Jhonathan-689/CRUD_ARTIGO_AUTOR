@@ -153,7 +153,10 @@ class AuthController
       return "Credenciais incorretas, tente novamente!";
     }
 
-    session_start();
+      if (session_status() === PHP_SESSION_NONE) {
+      session_start();
+  }
+    
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_name'] = $user['name'];
     $_SESSION['role'] = $user['role'];
