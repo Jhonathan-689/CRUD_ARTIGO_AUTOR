@@ -1,5 +1,3 @@
-create database lt_cloud_artigo_autores;
-
 CREATE TABLE authors (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -15,7 +13,7 @@ CREATE TABLE articles (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    COLUMN last_edited_by INT NUL
+    last_edited_by INT NULL
 );
 
 CREATE TABLE articles_authors (
